@@ -1,4 +1,5 @@
 import java.io.Console;
+import java.util.Scanner;
 
 /**
  * Assignment 1 - Guessing Game
@@ -7,7 +8,7 @@ import java.io.Console;
  * for the Guesser class. It is your
  * task to complete the missing parts.
  */
-public class Guesser{
+public class Guesser {
   private int low;
   private int high;
 
@@ -21,25 +22,32 @@ public class Guesser{
    * and review the section about constructors.
    *
    */
-  
+
   // Write the constructor below this line.
 
+  public Guesser(int low, int high) {
+    this.low = low;
+    this.high = high;
+  }
 
   /*
    * Task 2. Complete the start() method, so that
    * in the method body, you call first the
    * rules() method, next the doGuesses() method.
    */
-  public void start(){
+  public void start() {
     // call the rules method here
+    rules();
     // call the doGuesses() method here
+    doGuesses();
+
   }
 
-  private void rules(){
+  private void rules() {
     System.out.println("Think of a number between " +
-                       low + " and "  + high);
+        low + " and " + high);
     System.out.println("I'm going to ask a few questions in order " +
-                       "to guess the number.");
+        "to guess the number.");
     System.out.println("Please answer T for true, and F for false.\n");
   }
 
@@ -53,31 +61,40 @@ public class Guesser{
    * a valid reply. Return the String that you read from
    * the player.
    */
-  private String getReply(){
-    String reply = null;
+  private String getReply() {
+
     // Write code here which reads a String from the console.
+    Scanner sc = new Scanner(System.in);
+
+    String reply = sc.nextLine();
+
     // As long as it is not a valid reply (one of "T" and "F")
     // write an error message, and read a new reply.
     // When you have gotten a valid reply, return it.
+    while (reply != "T" || reply != "F") {
+      System.out.println("Answer is invalid. Please answer T for true, and F for false.");
+      reply = sc.nextLine();
+    }
+
     return reply;
   }
 
-  private void doGuesses(){
-    int i=0; // number of guesses
-    int middle=0;
-    while(low<high){
+  private void doGuesses() {
+    int i = 0; // number of guesses
+    int middle = 0;
+    while (low < high) {
       // Set next guess to the middle between
       // current low and current high
-      middle=low + (high-low)/2;
+      middle = low + (high - low) / 2;
 
       System.out.println("Is the number less than or equal to " +
-                         middle + "?");
+          middle + "?");
       String reply = getReply();
-      if("T".equals(reply)){
+      if ("T".equals(reply)) {
         // The number is less than or equal to middle
         // so we move down high to middle
         high = middle;
-      }else{
+      } else {
         // The number is greater than middle,
         // so we move up low to middle + 1
         low = middle + 1;
@@ -89,11 +106,11 @@ public class Guesser{
     answer(low, i);
   }
 
-  private void answer(int guess, int numberOfGuesses){
+  private void answer(int guess, int numberOfGuesses) {
     System.out.println("You were thinking about " +
-                       guess +
-                       " (took me " + numberOfGuesses +
-                       " guesses)");
+        guess +
+        " (took me " + numberOfGuesses +
+        " guesses)");
   }
 
 }
