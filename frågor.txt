@@ -1,0 +1,162 @@
+1. Vad är pull repektive push?
+- pull laddar ner ändringar som skett i repositoryt.
+- push laddar upp ändringar till repositoryt som är committed.
+
+2. När använder man log respektive status?
+- log används för att se Commit History
+- status används för att se filer i Staging Area och det står där vad som behöver åtgärdas för att få bort dem från Staging Area.
+
+
+3. Vad är en Git branch och varför är de viktiga?
+- Ett repository har en main branch redan från början när vi skapat repositoryt. Det är den branchen som by default kopieras när man vill klona repositoryt. 
+Man brukar vilja skapa en ny branch för att inte påverka main branch. T.ex. när man vill utveckla nya delar av projektet och testa detta innan man adderar det till projektet, fixa buggar eller testa nya idéer.
+
+
+4. Det finns flera sätt att rulla tillbaka koden till ett tidigare tillstånd. Förklara skillnaden och motivera när man skulle använda den ena eller andra metoden. Ge exempel på de kommandon du använder för att göra detta och visa att det fungerar, vilken output du fick från git-kommandona.
+Tips: Gör exemplen med att backa i en branch så att master fortfarande är korrekt. 
+
+- Det finns git restore, git reset och git revert. 
+
+
+
+- GIT RESTORE
+återställer filer till senast commit och påverkar ej Commit History. T.ex. gjort en ändring i en fil men ångrar det sedan och vill gå tillbaka till hur det var innan.
+
+Exempel, vi har gjort en ändring i spel.java och sparat denna ändring. Vi kollar git status hur det ser ut. Sen använder vi git restore för att ångra ändringen, därefter kör vi git status för att bekräfta att senaste ändringen är borttagen.
+
+$git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   Spel.java
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+$git restore Spel.java
+
+$git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+
+
+
+- GIT RESET
+används tillsammans med någon av tre följande flaggor:
+
+GIT RESET --SOFT
+vilket ångrar en gjord commit. Ändrar inget i Working Directory eller Staging Area. Exempelvis: Används när man stavat fel i senaste gjorda commit och vill ändra detta.
+$git reset --soft HEAD~1
+$git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   Spel.java
+
+$git commit -m "Nu är det rättstavat"
+$git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+
+
+
+
+
+GIT RESET --MIXED
+(standardflagga, vilket innebär att den ej behöver skrivas ut), denna används främst när man vill radera en fil som har committats.
+$git reset HEAD~1
+Unstaged changes after reset:
+M       Spel.java
+
+$git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   Spel.java
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+
+
+
+
+GIT RESET --HARD 
+flyttar HEAD till en tidigare commit, raderar alla ändringar i Working Directory. Används när något oåterkalleligt fel har gjorts samt ej kan raderas manuellt utan att återställa programmet.
+$git reset --hard HEAD~1
+HEAD is now at 5fc1321 Gjort en ny ändring
+
+
+
+
+
+
+- GIT REVERT
+skapar en ny commit som ångrar en tidigare commit, för att säkert ångra ändringar utan att något i Commit History raderas.
+Exempelvis skapat filen endometri.html och vill nu ångra detta fast behålla committen som gjordes i samband med att jag skapat filen. Då skriver jag git revert och committens hash (varje commit har sitt eget id som kallas hash. Vi börjar med att använda log --oneline för att se samtliga commits med respektive hash):
+
+$git log --oneline
+6b5604f (HEAD -> main) Lagt till en hälsning till citron.html
+c3f9414 Added katt
+38d9e3e Created endometri.html
+ee23434 Created citron file
+16d9a89 Created file Beta
+fe3e248 Created file Agda
+60611a2 Revert "Gjort en ny ändring"
+
+
+$git revert 38d9e3e
+hint: Waiting for your editor to close the file...
+
+((Kommentar: stänger filen COMMIT_EDITMSG som har öppnats automatiskt i den IDE som används, så fort kommandot git revert 38d9e3e skapats. Vi stänger filen och output ändras från "hint: Waiting for your editor to close the file..." till:))
+
+$git revert 38d9e3e
+[main 701a2d7] Revert "Created endometri.html"
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 endometri.html
+
+
+$git log --oneline
+701a2d7 (HEAD -> main) Revert "Created endometri.html"
+6b5604f Lagt till en hälsning till citron.html
+c3f9414 Added katt
+38d9e3e Created endometri.html
+ee23434 Created citron file
+16d9a89 Created file Beta
+fe3e248 Created file Agda
+60611a2 Revert "Gjort en ny ändring"
+
+
+
+Kommentar: filen som nämns ovan heter COMMIT_EDITMSG och har öppnats automatiskt i den IDE som används, när git revert används, 
+man behöver endast stänga ned den för att sedan fortsätta. 
+Följande står i den filen:
+
+Revert "Created endometri.html"
+
+This reverts commit 38d9e3e03acd18b09a468fcaf03fb3142d4be27f.
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 7 commits.
+#   (use "git push" to publish your local commits)
+#
+# You are currently reverting commit ee23434.
+#
+# Changes to be committed:
+#	deleted:    endometri.html
