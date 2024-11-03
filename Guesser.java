@@ -1,4 +1,4 @@
-import java.io.Console;
+import java.util.Scanner;
 
 /**
  * Assignment 1 - Guessing Game
@@ -8,6 +8,7 @@ import java.io.Console;
  * task to complete the missing parts.
  */
 public class Guesser {
+  Scanner sc = new Scanner(System.in);
   private int low;
   private int high;
 
@@ -40,6 +41,7 @@ public class Guesser {
     // call the doGuesses() method here
     doGuesses();
 
+    sc.close();
   }
 
   private void rules() {
@@ -63,16 +65,15 @@ public class Guesser {
   private String getReply() {
 
     // Write code here which reads a String from the console.
-    Console console = System.console();
 
-    String reply = console.readLine();
+    String reply = sc.nextLine();
 
     // As long as it is not a valid reply (one of "T" and "F")
     // write an error message, and read a new reply.
     // When you have gotten a valid reply, return it.
     while (!reply.equals("T") && !reply.equals("F")) {
       System.out.println("Answer is invalid. Please answer T for true, and F for false.");
-      reply = console.readLine();
+      reply = sc.nextLine();
     }
 
     return reply;
